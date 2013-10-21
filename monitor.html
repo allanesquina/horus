@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Compartjs Monitor</title>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+
+		var socket = io.connect('http://localhost:3000');
+			
+	
+		socket.on('show', function (data) {
+			img = document.getElementById("img");
+			//console.log(data);
+			//var img = new Image();
+			img.src = data.img;
+			//document.body.appendChild( img );
+			//socket.emit('my other event', { my: 'data' });
+		});
+
+</script>
+
+
+</head>
+<body>
+	<img src="" id="img" alt="">
+</body>
+</html>

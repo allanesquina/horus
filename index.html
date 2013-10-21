@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Compartjs</title>
+	<style>
+	body, html {
+		height: 10px;
+	}
+	body {
+		background: #303030; 
+
+		background-image: linear-gradient(to bottom, #222, #333);
+		
+		
+
+
+	}
+	video {
+	  width: 640px;
+	  height: 480px;
+	  background: rgba(255,255,255,0.5);
+	  border: 2px solid #222;
+	  position: absolute;
+	  left:0;
+	  right: 0;
+	  top:0;
+	  bottom: 0;
+	  margin:auto;
+	  box-shadow: 0 0 30px #111;
+
+	}
+
+
+</style>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/html2canvas.js"></script>
+	<script>
+		var socket = io.connect('http://localhost:3000'),
+				 video,canvas,ctx;
+
+
+		
+
+		window.onload = function() {
+
+		function snapshot() {
+		 
+		  	ctx.drawImage(video,0,0);		    
+		  	return canvas.toDataURL('image/webp');
+		  
+		}
+			var video = document.querySelector('video'),
+					canvas = document.querySelector('canvas'),
+					ctx = canvas.getContext("2d");
+
+			setInterval(function() {
+
+				socket.emit('print', {img : snapshot()});
+				
+				html2canvas(document.body, {
+					onrendered: function(canvas) {
+						/* canvas is the actual canvas element,
+						to append it to the page call for example
+						document.body.appendChild( canvas );
+						*/
+						//socket.emit('print', {img : canvas.toDataURL()});		
+						//document.body.appendChild( canvas );
+						//console.dir(canvas.toDataURL());
+					}
+				});
+				//console.log(2);
+			}, 100);
+		}
+	
+		socket.on('show', function (data) {
+			//console.log(data.img);
+			//socket.emit('my other event', { my: 'data' });
+		});
+
+		window.URL = window.URL || window.webkitURL;
+		navigator.getUserMedia  = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+		                          navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+	
+
+		
+		var onFailSoHard = function(e) {
+    	console.log('Reeeejected!', e);
+  	};
+
+  // Not showing vendor prefixes.
+  navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
+    var video = document.querySelector('video');
+    video.src = window.URL.createObjectURL(localMediaStream);
+
+    // Note: onloadedmetadata doesn't fire in Chrome when using it with getUserMedia.
+    // See crbug.com/110938.
+    video.onloadedmetadata = function(e) {
+      // Ready to go. Do some stuff.
+    };
+  }, onFailSoHard);
+
+</script>
+
+
+</head>
+<body>
+<video autoplay></video>
+<canvas width="640" height="480" style="display:none;"></canvas>
+</body>
+</html>
